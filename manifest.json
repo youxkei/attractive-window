@@ -1,0 +1,14 @@
+{
+  "name": "Attractive Window",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Lets you open a new tab in a specified window",
+  "background": {
+    "scripts": ["script.js"],
+    "persistent": false
+  },
+  "permissions": [
+    "tabs"
+  ],
+  "homepage_url": "https://github.com/youxkei/attractive-window"
+}
