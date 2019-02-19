@@ -11,6 +11,10 @@ chrome.tabs.onCreated.addListener(tab => {
 
     const specifiedWindow = specifiedWindows[0]
 
+    if (tab.windowId === specifiedWindow.id) {
+      return
+    }
+
     chrome.tabs.move(tab.id, { windowId: specifiedWindow.id, index: -1 }, () => {
       chrome.windows.update(specifiedWindow.id, { focused: true }, () => {
         chrome.tabs.update(tab.id, { active: true })
