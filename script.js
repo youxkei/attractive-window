@@ -4,19 +4,25 @@ chrome.tabs.onCreated.addListener(tab => {
   }
 
   chrome.windows.getAll({ populate: true }, windows => {
-    const specifiedWindows = windows.filter(window => window.tabs[0].url === "about:blank")
-    if (specifiedWindows.length === 0) {
+    const distractiveWindows = windows.filter(window => window.tabs.length > 2 && window.tabs[window.tabs.length - 2].url === "about:blank")
+    const attractiveWindows = windows.filter(window => window.tabs[0].url === "about:blank")
+
+    console.log(attractiveWindows)
+    console.log(distractiveWindows)
+
+    if (attractiveWindows.length === 0 || distractiveWindows.length === 0) {
       return
     }
 
-    const specifiedWindow = specifiedWindows[0]
+    const attractiveWindow = attractiveWindows[0]
+    const distractiveWindow = distractiveWindows[0]
 
-    if (tab.windowId === specifiedWindow.id) {
+    if (tab.windowId !== distractiveWindow.id || tab.windowId === attractiveWindow.id) {
       return
     }
 
-    chrome.tabs.move(tab.id, { windowId: specifiedWindow.id, index: -1 }, () => {
-      chrome.windows.update(specifiedWindow.id, { focused: true }, () => {
+    chrome.tabs.move(tab.id, { windowId: attractiveWindow.id, index: -1 }, () => {
+      chrome.windows.update(attractiveWindow.id, { focused: true }, () => {
         chrome.tabs.update(tab.id, { active: true })
       })
     })
