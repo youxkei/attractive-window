@@ -1,30 +1,41 @@
-chrome.tabs.onCreated.addListener(tab => {
+chrome.tabs.onCreated.addListener((tab) => {
   if (tab.pinned) {
-    return
+    return;
   }
 
-  chrome.windows.getAll({ populate: true }, windows => {
-    const distractiveWindows = windows.filter(window => window.tabs.length > 2 && window.tabs[window.tabs.length - 2].url === "about:blank")
-    const attractiveWindows = windows.filter(window => window.tabs[0].url === "about:blank")
+  chrome.windows.getAll({ populate: true }, (windows) => {
+    const distractiveWindows = windows.filter(
+      (window) => window.tabs[0].url === "about:blank#from"
+    );
+    const attractiveWindows = windows.filter(
+      (window) => window.tabs[0].url === "about:blank#to"
+    );
 
-    console.log(attractiveWindows)
-    console.log(distractiveWindows)
+    console.log(attractiveWindows);
+    console.log(distractiveWindows);
 
     if (attractiveWindows.length === 0 || distractiveWindows.length === 0) {
-      return
+      return;
     }
 
-    const attractiveWindow = attractiveWindows[0]
-    const distractiveWindow = distractiveWindows[0]
+    const attractiveWindow = attractiveWindows[0];
+    const distractiveWindow = distractiveWindows[0];
 
-    if (tab.windowId !== distractiveWindow.id || tab.windowId === attractiveWindow.id) {
-      return
+    if (
+      tab.windowId !== distractiveWindow.id ||
+      tab.windowId === attractiveWindow.id
+    ) {
+      return;
     }
 
-    chrome.tabs.move(tab.id, { windowId: attractiveWindow.id, index: -1 }, () => {
-      chrome.windows.update(attractiveWindow.id, { focused: true }, () => {
-        chrome.tabs.update(tab.id, { active: true })
-      })
-    })
-  })
-})
+    chrome.tabs.move(
+      tab.id,
+      { windowId: attractiveWindow.id, index: -1 },
+      () => {
+        chrome.windows.update(attractiveWindow.id, { focused: true }, () => {
+          chrome.tabs.update(tab.id, { active: true });
+        });
+      }
+    );
+  });
+});
